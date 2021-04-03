@@ -5,10 +5,7 @@ const EmailTemplate = require('email-templates').EmailTemplate;
 
 let SimpleParseSmtpAdapter = (adapterOptions) => {
 
-    if (!adapterOptions) {
-        throw 'SimpleParseSMTPAdapter requires adapter options';
-    }
-    else if(adapterOptions.service=='Gmail'){
+    if(!adapterOptions && adapterOptions.service=='Gmail'){
         if (!adapterOptions ||  
             !adapterOptions.service|| 
             !adapterOptions.type ||  
@@ -20,8 +17,8 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
             throw 'SimpleParseSMTPAdapter requires service,type, user, clientId,clientSecret,refreshToken and accessToken';
         }
     }
-    else if(adapterOptions.service=='SMTP'){
-            if (!adapterOptions.user || !adapterOptions.password || !adapterOptions.host || !adapterOptions.fromAddress ) {
+    else if(!adapterOptions && adapterOptions.service=='SMTP'){
+            if (!adapterOptions || !adapterOptions.user || !adapterOptions.password || !adapterOptions.host || !adapterOptions.fromAddress ) {
                 throw 'SimpleParseSMTPAdapter requires user, password, host, and fromAddress';
             }
     }else{
@@ -152,23 +149,14 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
         };
 
         if (adapterOptions.templates && adapterOptions.templates.resetPassword) {
-
-            return renderTemplate(adapterOptions.templates.resetPassword.template, data).then((result) => {
+            let resetPassword = adapterOptions.templates.resetPassword;
+            return renderTemplate(resetPassword.template, data).then((result) => {
                 mail.text = result.html;
-                mail.subject = adapterOptions.templates.resetPassword.subject;
-
+                mail.subject = resetPassword.subject;
                 return sendMail(mail);
-            }, (e) => {
-
-                return new Promise((resolve, reject) => {
-                    console.log(e)
-                    reject(e);
-                });
             });
-
         } else {
             mail.text = data.link;
-
             return sendMail(mail);
         }
     };
@@ -185,23 +173,15 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
         };
 
         if (adapterOptions.templates && adapterOptions.templates.verifyEmail) {
-
-            return renderTemplate(adapterOptions.templates.verifyEmail.template, data).then((result) => {
+            let verifyEmail = adapterOptions.templates.verifyEmail;
+            return renderTemplate(verifyEmail.template, data).then((result) => {
                 mail.text = result.html;
-                mail.subject = adapterOptions.templates.verifyEmail.subject;
-
+                mail.subject = verifyEmail.subject;
                 return sendMail(mail);
-            }, (e) => {
-
-                return new Promise((resolve, reject) => {
-                    console.log(e);
-                    reject(e);
-                });
             });
 
         } else {
             mail.text = data.link;
-
             return sendMail(mail);
         }
     };
